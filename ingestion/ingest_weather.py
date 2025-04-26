@@ -2,11 +2,13 @@ import json
 import requests
 from logger import get_logger
 from config.secrets import WEATHER_API_KEY
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 
 logger = get_logger("__name__")
 
 
-def fetch_weather_data(city_name: str) -> json:
+def fetch_weather_data(city_name: str) -> dict:
     """
     Fetches weather data for the given city from the weather API.
     """
