@@ -1,4 +1,5 @@
 from ingestion.parallel_fetcher import parallel_fetch_weather
+from storage.save_data import save_raw_data
 
 # from storage.save_raw import save_raw_data
 from logger import get_logger
@@ -21,8 +22,9 @@ def main():
         )
 
         # 3. Save raw data
-        # timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        # save_raw_data(weather_data, f"weather_raw_{timestamp}.json")
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        save_path = f"storage/raw/weather_raw_{timestamp}.json"
+        save_raw_data(weather_data, save_path)
 
         logger.info("Pipeline completed successfully.")
 
