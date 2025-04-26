@@ -20,7 +20,7 @@ def save_raw_data(weather_data: dict, filename: str) -> str:
 
     serialized_data = json.dumps(weather_data, indent=2)
     # TODO: Add Error Handling, permission issues, disk full etc...
-    # TODO: Check to see if the file is empty or not
+
     if not serialized_data:
         logger.error(f"The file is empty, try again")
         raise ValueError("File empty")
