@@ -14,19 +14,18 @@ def fetch_weather_data(city_name: str) -> json:
     try:
         response = requests.get(search_url, timeout=10)
         response.raise_for_status()
-        # TODO: Handle errors later, what could be an error we see?
-        # HTTPerror, ConnectionError, Timeout, RequestException
     except requests.exceptions.HTTPError as errh:
-        # TODO: add logging statements instead of print
-        logger.info(f"Http Error: {errh}")
+        logger.error(f"Http Error: {errh}")
         raise Exception(f"Http Error occurred: {errh}")
     except requests.exceptions.ConnectionError as errc:
-        logger.info(f"Connection Error: {errc}")
+        logger.error(f"Connection Error: {errc}")
         raise Exception(f"Connection Error occurred: {errc}")
     except requests.exceptions.Timeout as errt:
-        print("Timeout Error", errt)
+        logger.error(f"Timeout Error {errt}")
+        raise Exception(f"Timeout error occured {errt}")
     except requests.exceptions.RequestException as errr:
-        print("Something Else happened", errr)
+        logger.error(f"Something Else happened {errr}")
+        raise Exception(f"Something Else happened {errr}")
 
     # Parse the WOEID from the search result
     search_result = response.json()
@@ -36,7 +35,12 @@ def fetch_weather_data(city_name: str) -> json:
 
     # Fetch the weather using the WOEID
     weather_url = f"https://www.metaweather.com/api/location/{woeid}/"
-    weather_response = requests.get(weather_url, timeout=10)
-    weather_data = weather_response.json()
+    try:
+        weather_response = requests.get(weather_url, timeout=10)
+        weather_response.raise_for_status()
+    except requests.exceptions.RequestException as err:
+        logger.error(f"Failed Fetching weather data: {err}")
+        raise Exception(f"Failed fetching weather data: {err}")
 
-    return weather_data
+    logger.info(f"Successfully fetched weather data for {city_name}")
+    return weather_response.json()

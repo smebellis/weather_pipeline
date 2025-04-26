@@ -11,7 +11,8 @@ class LoggerSingleton:
             with cls._lock:
                 if not cls._instance:
                     cls._instance = super(LoggerSingleton, cls).__new__(cls)
-                    cls._instance._initalize_logger()
+                    cls._instance._initialize_logger()
+        return cls._instance
 
     def _initialize_logger(self):
         self.logger = logging.getLogger("WeatherPipelineLogger")
