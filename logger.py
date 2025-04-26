@@ -1,5 +1,7 @@
 import logging
 import threading
+import os
+from logging.handlers import TimedRotatingFileHandler
 
 
 class LoggerSingleton:
@@ -19,16 +21,32 @@ class LoggerSingleton:
         self.logger.setLevel(logging.INFO)
 
         if not self.logger.handlers:
-            handler = logging.StreamHandler()
-            formatter = logging.Formatter(
+            console_handler = logging.StreamHandler()
+            console_formatter = logging.Formatter(
                 "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
             )
 
-            handler.setFormatter(formatter)
-            self.logger.addHandler(handler)
+            console_handler.setFormatter(console_formatter)
+            self.logger.addHandler(console_handler)
+
+            os.makedirs("logs", exist_ok=True)
+
+            # File handler with timed rotation (daily)
+            file_handler = TimedRotatingFileHandler(
+                filename="logs/pipeline.log",
+                when="midnight",
+                interval=1,
+                backupCount=7,
+                encoding="utf-8",
+                delay=False,
+            )
+            file_formatter = logging.Formatter(
+                "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+            )
+            file_handler.setFormatter(file_formatter)
+            self.logger.addHandler(file_handler)
 
 
 def get_logger(name):
     instance = LoggerSingleton()
-    logger = instance.logger
-    return logger.getChild(name)
+    return instance.logger.getChild(name)
